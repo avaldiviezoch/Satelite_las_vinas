@@ -17,7 +17,9 @@
     const outer=document.getElementById('inv6Work');
     const BLOCK_ID='sat-inv6-green-location-exact';
     const STYLE_ID='sat-inv6-green-location-exact-style';
+    const DUPLICATE_ID='inv6-green-location-from-inv1';
     let greenSrcPromise=null;
+    let duplicateObserver=null;
 
     function deepestDoc(){
       try{
@@ -29,6 +31,17 @@
         if(!f2) return null;
         return f2.contentDocument||f2.contentWindow.document;
       }catch(e){return null;}
+    }
+
+    function removeSecondGreen(doc){
+      doc.getElementById(DUPLICATE_ID)?.remove();
+    }
+
+    function keepSecondGreenRemoved(doc){
+      removeSecondGreen(doc);
+      if(duplicateObserver) duplicateObserver.disconnect();
+      duplicateObserver=new MutationObserver(()=>removeSecondGreen(doc));
+      duplicateObserver.observe(doc.body,{childList:true,subtree:true});
     }
 
     function greenSrc(){
@@ -78,13 +91,15 @@
       const location=doc.querySelector('section.location-section');
       if(!location) return false;
       ensureFonts(doc);ensureStyle(doc);
-      doc.querySelectorAll('#inv6-green-location-from-inv1,#sat-inv6-green-location-exact').forEach(n=>n.remove());
+      removeSecondGreen(doc);
+      doc.getElementById(BLOCK_ID)?.remove();
       const block=doc.createElement('section');
       block.id=BLOCK_ID;
       block.setAttribute('aria-label','Ubicación de la ceremonia y recepción');
       block.innerHTML=`<div class="church-green-wrap"><img class="green-img" alt="" aria-hidden="true"><div class="church-overlay-content"><div class="church-kicker">UBICACIÓN</div><div class="church-title"><span>Ceremonia</span><span>&amp; Recepción</span></div><p class="church-main-copy">La boda y la recepción se realizarán en el mismo lugar.</p><div class="church-place-name">Residencia Privada</div><div class="church-address">Calle Acapulco 480, La Molina</div><p class="church-note">Te esperamos para compartir juntos cada momento de este día tan especial.</p></div></div>`;
       location.insertAdjacentElement('afterend',block);
       try{block.querySelector('.green-img').src=await greenSrc();}catch(e){console.error(e)}
+      keepSecondGreenRemoved(doc);
       return true;
     }
 
