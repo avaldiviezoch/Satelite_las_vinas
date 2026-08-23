@@ -11,7 +11,7 @@
   </style>
 </head>
 <body>
-  <iframe id="inv6Work" src="https://avaldiviezoch.github.io/Wedding/invitaciones/invitacion_6/?satellite=20260823-1741" title="Invitación 6 - entorno temporal" allow="autoplay; fullscreen"></iframe>
+  <iframe id="inv6Work" src="https://avaldiviezoch.github.io/Wedding/invitaciones/invitacion_6/?satellite=20260823-1812" title="Invitación 6 - entorno temporal" allow="autoplay; fullscreen"></iframe>
   <script>
   (()=>{
     const outer=document.getElementById('inv6Work');
@@ -34,7 +34,30 @@
     }
 
     function removeSecondGreen(doc){
+      // Conserva SIEMPRE nuestra primera tarjeta con texto.
+      const keep=doc.getElementById(BLOCK_ID);
+
+      // Elimina el duplicado conocido que crea la Invitación 6 base.
       doc.getElementById(DUPLICATE_ID)?.remove();
+
+      // Elimina cualquier otra tarjeta verde de Invitación 1/6 que aparezca fuera de la tarjeta conservada.
+      doc.querySelectorAll('img.church-green-img, img.inv6-green-location-img').forEach(img=>{
+        if(keep && keep.contains(img)) return;
+        const host=img.closest('section') || img.closest('.church-green-wrap') || img.parentElement;
+        if(host && host!==keep && !(keep && keep.contains(host))) host.remove();
+      });
+
+      // Si algún script recrea el fondo inmediatamente debajo de la tarjeta correcta,
+      // elimina únicamente ese bloque duplicado cuando contiene el mismo tipo de imagen verde.
+      if(keep){
+        let node=keep.nextElementSibling;
+        for(let i=0;node && i<3;i++){
+          const next=node.nextElementSibling;
+          const duplicateImg=node.querySelector?.('img.church-green-img, img.inv6-green-location-img');
+          if(duplicateImg) node.remove();
+          node=next;
+        }
+      }
     }
 
     function keepSecondGreenRemoved(doc){
@@ -69,6 +92,9 @@
       let s=doc.getElementById(STYLE_ID);
       if(!s){s=doc.createElement('style');s.id=STYLE_ID;doc.head.appendChild(s);}
       s.textContent=`
+        #${DUPLICATE_ID}{display:none!important}
+        img.church-green-img:not(#${BLOCK_ID} img),
+        img.inv6-green-location-img:not(#${BLOCK_ID} img){display:none!important}
         #${BLOCK_ID}{width:100%!important;margin:0!important;padding:0!important;background:transparent!important;position:relative!important;overflow:hidden!important}
         #${BLOCK_ID} .church-green-wrap{width:100%!important;max-width:680px!important;margin:0 auto!important;padding:0!important;position:relative!important;overflow:hidden!important;background:transparent!important}
         #${BLOCK_ID} .green-img{display:block!important;width:100%!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important}
@@ -99,13 +125,14 @@
       block.innerHTML=`<div class="church-green-wrap"><img class="green-img" alt="" aria-hidden="true"><div class="church-overlay-content"><div class="church-kicker">UBICACIÓN</div><div class="church-title"><span>Ceremonia</span><span>&amp; Recepción</span></div><p class="church-main-copy">La boda y la recepción se realizarán en el mismo lugar.</p><div class="church-place-name">Residencia Privada</div><div class="church-address">Calle Acapulco 480, La Molina</div><p class="church-note">Te esperamos para compartir juntos cada momento de este día tan especial.</p></div></div>`;
       location.insertAdjacentElement('afterend',block);
       try{block.querySelector('.green-img').src=await greenSrc();}catch(e){console.error(e)}
+      removeSecondGreen(doc);
       keepSecondGreenRemoved(doc);
       return true;
     }
 
     outer.addEventListener('load',()=>{
-      [200,600,1200,2200,4000].forEach(t=>setTimeout(apply,t));
-      let n=0;const timer=setInterval(()=>{apply();if(++n>20)clearInterval(timer)},700);
+      [200,600,1200,2200,4000,7000].forEach(t=>setTimeout(apply,t));
+      let n=0;const timer=setInterval(()=>{apply();if(++n>30)clearInterval(timer)},700);
     });
   })();
   </script>
