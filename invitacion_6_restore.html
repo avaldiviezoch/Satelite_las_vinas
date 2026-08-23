@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#fffdf8" />
+  <title>Invitación 6 - restaurada</title>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fffdf8}
+    #inv6Work{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fffdf8}
+  </style>
+</head>
+<body>
+  <iframe id="inv6Work" src="https://avaldiviezoch.github.io/Wedding/invitaciones/invitacion_6/?restore=20260823-1731" title="Invitación 6 - entorno temporal" allow="autoplay; fullscreen"></iframe>
+  <script>
+  (()=>{
+    const outer=document.getElementById('inv6Work');
+    const ID='sat-inv6-location-overlay-restored';
+    const STYLE='sat-inv6-location-style-restored';
+
+    function deepestDoc(){
+      try{
+        const d1=outer.contentDocument||outer.contentWindow.document;
+        const f1=d1.getElementById('inviteFrame');
+        if(!f1) return null;
+        const d2=f1.contentDocument||f1.contentWindow.document;
+        const f2=d2.getElementById('inv5');
+        if(!f2) return null;
+        return f2.contentDocument||f2.contentWindow.document;
+      }catch(e){return null;}
+    }
+
+    function findCard(doc){
+      const byClass=doc.querySelector('.church-green-wrap,.inv6-green-location-wrap,[class*="green"][class*="location"]');
+      if(byClass) return byClass;
+      const img=doc.querySelector('img.church-green-img,img.inv6-green-location-img');
+      return img ? (img.parentElement||img) : null;
+    }
+
+    function ensureFonts(doc){
+      if(doc.getElementById('sat-inv6-fonts')) return;
+      const link=doc.createElement('link');
+      link.id='sat-inv6-fonts';
+      link.rel='stylesheet';
+      link.href='https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500&display=swap';
+      doc.head.appendChild(link);
+    }
+
+    function ensureStyle(doc){
+      let s=doc.getElementById(STYLE);
+      if(!s){s=doc.createElement('style');s.id=STYLE;doc.head.appendChild(s);}
+      s.textContent=`
+        #${ID}{position:absolute!important;inset:0!important;z-index:50!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important;padding:104px 22px 70px!important;box-sizing:border-box!important;pointer-events:none!important;color:#fffdf6!important}
+        #${ID} *{box-sizing:border-box!important}
+        #${ID} .kicker{margin:0 0 14px!important;font-family:"Cormorant Garamond",serif!important;font-size:13px!important;line-height:1.15!important;letter-spacing:5px!important;font-weight:400!important;color:#d9d6b9!important;text-transform:uppercase!important}
+        #${ID} .title{margin:0 0 26px!important;display:flex!important;flex-direction:column!important;gap:0!important;font-family:"Great Vibes",cursive!important;font-size:clamp(54px,12vw,76px)!important;line-height:.86!important;font-weight:400!important;color:#fffdf6!important}
+        #${ID} .title span{display:block!important;font-family:"Great Vibes",cursive!important;font-size:inherit!important;line-height:inherit!important;font-weight:400!important}
+        #${ID} .copy{margin:0 0 32px!important;max-width:330px!important;font-family:"Cormorant Garamond",serif!important;font-size:clamp(18px,4.8vw,25px)!important;line-height:1.35!important;font-weight:400!important;color:#fffdf6!important}
+        #${ID} .place{margin:0 0 12px!important;font-family:"Great Vibes",cursive!important;font-size:clamp(48px,10.5vw,66px)!important;line-height:1!important;font-weight:400!important;color:#f2e4ab!important}
+        #${ID} .address{margin:0 0 30px!important;padding-bottom:7px!important;width:min(86%,420px)!important;border-bottom:1px solid rgba(217,214,185,.5)!important;font-family:"Cormorant Garamond",serif!important;font-size:clamp(18px,4.6vw,24px)!important;line-height:1.35!important;font-weight:400!important;color:#fffdf6!important}
+        #${ID} .note{margin:0 0 28px!important;max-width:340px!important;font-family:"Cormorant Garamond",serif!important;font-size:clamp(17px,4.3vw,22px)!important;line-height:1.45!important;font-weight:400!important;color:rgba(255,253,246,.92)!important}
+        #${ID} .btn{pointer-events:auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:236px!important;padding:14px 30px!important;border-radius:999px!important;background:#fffdf6!important;color:#3f482e!important;text-decoration:none!important;font-family:"Montserrat",sans-serif!important;font-size:11px!important;line-height:1!important;letter-spacing:3px!important;font-weight:500!important}
+      `;
+    }
+
+    function apply(){
+      const doc=deepestDoc();
+      if(!doc) return;
+      const card=findCard(doc);
+      if(!card) return;
+      const host=card.matches?.('img')?(card.parentElement||card):card;
+      if(doc.defaultView.getComputedStyle(host).position==='static') host.style.setProperty('position','relative','important');
+      ensureFonts(doc);ensureStyle(doc);
+      doc.querySelectorAll('#sat-inv6-location-overlay,#sat-inv6-location-overlay-restored').forEach(n=>n.remove());
+      const o=doc.createElement('div');
+      o.id=ID;
+      o.innerHTML=`
+        <div class="kicker">UBICACIÓN</div>
+        <div class="title"><span>Ceremonia</span><span>&amp; Recepción</span></div>
+        <p class="copy">La boda y la recepción se realizarán en el mismo lugar.</p>
+        <div class="place">Residencia Privada</div>
+        <div class="address">Calle Acapulco 480, La Molina</div>
+        <p class="note">Te esperamos para compartir juntos cada momento de este día tan especial.</p>
+        <a class="btn" href="https://www.google.com/maps/search/?api=1&query=Casa+Acapulco+Calle+Acapulco+480+La+Molina+Lima" target="_blank" rel="noopener noreferrer">VER UBICACIÓN</a>`;
+      host.appendChild(o);
+    }
+
+    outer.addEventListener('load',()=>{
+      [100,300,700,1200,2000,3200,5000].forEach(t=>setTimeout(apply,t));
+      let n=0;const timer=setInterval(()=>{apply();if(++n>30)clearInterval(timer)},500);
+    });
+  })();
+  </script>
+</body>
+</html>
