@@ -31,6 +31,28 @@
       }catch(e){ return null; }
     }
 
+    function applyCrewPhraseFont(doc){
+      if(!doc.getElementById('sat-inv6-cormorant-font')){
+        const link=doc.createElement('link');
+        link.id='sat-inv6-cormorant-font';
+        link.rel='stylesheet';
+        link.href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap';
+        doc.head.appendChild(link);
+      }
+      const normalize=value=>(value||'')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g,'')
+        .replace(/\s+/g,' ')
+        .trim()
+        .toLowerCase();
+      const target='toda buena aventura necesita una buena tripulacion';
+      const candidates=[...doc.querySelectorAll('p,div,span,h1,h2,h3,h4')]
+        .filter(el=>normalize(el.textContent)===target);
+      candidates.forEach(el=>{
+        el.style.setProperty('font-family','"Cormorant Garamond",serif','important');
+      });
+    }
+
     function findGreenCard(doc,location){
       const direct=doc.querySelector('.church-green-wrap, .inv6-green-location-wrap, [class*="green"][class*="location"]');
       if(direct) return direct;
@@ -154,6 +176,7 @@
     function apply(){
       const doc=deepestDoc();
       if(!doc) return false;
+      applyCrewPhraseFont(doc);
       const location=doc.querySelector('section.location-section');
       const card=findGreenCard(doc,location);
       if(!card) return false;
