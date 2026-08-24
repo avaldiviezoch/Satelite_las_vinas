@@ -11,13 +11,14 @@
   </style>
 </head>
 <body>
-  <iframe id="inv6Work" src="https://avaldiviezoch.github.io/Wedding/invitaciones/invitacion_6/?satellite=4" title="Invitación 6 - entorno temporal" allow="autoplay; fullscreen"></iframe>
+  <iframe id="inv6Work" src="https://avaldiviezoch.github.io/Wedding/invitaciones/invitacion_6/?satellite=5&v=20260823-crewfont2" title="Invitación 6 - entorno temporal" allow="autoplay; fullscreen"></iframe>
   <script>
   (()=>{
     window.INV6_SATELLITE_WORKBENCH=true;
     const outer=document.getElementById('inv6Work');
     const OVERLAY_ID='sat-inv6-location-overlay';
     const STYLE_ID='sat-inv6-location-style';
+    const CREW_STYLE_ID='sat-inv6-crew-font-style';
 
     function deepestDoc(){
       try{
@@ -31,7 +32,17 @@
       }catch(e){ return null; }
     }
 
+    function normalizeText(value){
+      return (value||'')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g,'')
+        .replace(/\s+/g,' ')
+        .trim()
+        .toLowerCase();
+    }
+
     function applyCrewPhraseFont(doc){
+      if(!doc) return false;
       if(!doc.getElementById('sat-inv6-cormorant-font')){
         const link=doc.createElement('link');
         link.id='sat-inv6-cormorant-font';
@@ -39,18 +50,42 @@
         link.href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap';
         doc.head.appendChild(link);
       }
-      const normalize=value=>(value||'')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g,'')
-        .replace(/\s+/g,' ')
-        .trim()
-        .toLowerCase();
+
+      let style=doc.getElementById(CREW_STYLE_ID);
+      if(!style){
+        style=doc.createElement('style');
+        style.id=CREW_STYLE_ID;
+        doc.head.appendChild(style);
+      }
+      style.textContent=`
+        .hands-caption,
+        [data-sat-inv6-crew-font="1"]{
+          font-family:'Cormorant Garamond',serif !important;
+          font-weight:600 !important;
+        }
+      `;
+
       const target='toda buena aventura necesita una buena tripulacion';
-      const candidates=[...doc.querySelectorAll('p,div,span,h1,h2,h3,h4')]
-        .filter(el=>normalize(el.textContent)===target);
-      candidates.forEach(el=>{
-        el.style.setProperty('font-family','"Cormorant Garamond",serif','important');
+      let matched=false;
+      [...doc.querySelectorAll('p,div,span,h1,h2,h3,h4')].forEach(el=>{
+        const text=normalizeText(el.textContent);
+        if(text===target || (text.includes('toda buena aventura') && text.includes('buena tripulacion'))){
+          el.dataset.satInv6CrewFont='1';
+          el.style.setProperty('font-family',"'Cormorant Garamond',serif",'important');
+          el.style.setProperty('font-weight','600','important');
+          matched=true;
+        }
       });
+      return matched || !!doc.querySelector('.hands-caption');
+    }
+
+    function watchCrewPhrase(doc){
+      if(!doc?.body || doc.defaultView.__satInv6CrewObserver) return;
+      const Observer=doc.defaultView.MutationObserver;
+      if(!Observer) return;
+      const observer=new Observer(()=>applyCrewPhraseFont(doc));
+      observer.observe(doc.body,{childList:true,subtree:true,characterData:true});
+      doc.defaultView.__satInv6CrewObserver=observer;
     }
 
     function findGreenCard(doc,location){
@@ -177,9 +212,10 @@
       const doc=deepestDoc();
       if(!doc) return false;
       applyCrewPhraseFont(doc);
+      watchCrewPhrase(doc);
       const location=doc.querySelector('section.location-section');
       const card=findGreenCard(doc,location);
-      if(!card) return false;
+      if(!card) return true;
       const host=card.matches?.('img')?(card.parentElement||card):card;
       const cs=doc.defaultView.getComputedStyle(host);
       if(cs.position==='static') host.style.setProperty('position','relative','important');
@@ -203,9 +239,9 @@
     }
 
     outer.addEventListener('load',()=>{
-      [100,350,800,1500,2600,4200].forEach(t=>setTimeout(apply,t));
-      const timer=setInterval(apply,700);
-      setTimeout(()=>clearInterval(timer),10000);
+      [100,350,800,1500,2600,4200,7000,10000].forEach(t=>setTimeout(apply,t));
+      const timer=setInterval(apply,600);
+      setTimeout(()=>clearInterval(timer),20000);
     });
   })();
   </script>
