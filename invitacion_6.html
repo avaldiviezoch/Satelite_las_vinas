@@ -77,7 +77,7 @@
       const link=doc.createElement('link');
       link.id='sat-inv6-exact-fonts';
       link.rel='stylesheet';
-      link.href='https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500&display=swap';
+      link.href='https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500&display=swap';
       doc.head.appendChild(link);
     }
 
@@ -106,6 +106,7 @@
         #${PHOTO_ID} .photo-2{width:50%!important;right:3%!important;top:19.84%!important;z-index:2!important}
 
         .sat-inv6-next-section{margin-top:-58px!important;position:relative!important;z-index:3!important}
+        .sat-inv6-crew-title{position:absolute!important;left:50%!important;top:34%!important;transform:translateX(-50%)!important;width:68%!important;max-width:420px!important;margin:0!important;padding:0!important;z-index:7!important;text-align:center!important;font-family:'Cormorant Garamond',serif!important;font-size:clamp(30px,4.4vw,46px)!important;line-height:1.08!important;font-style:italic!important;font-weight:500!important;color:#5B4939!important;letter-spacing:0!important}
 
         @media(max-width:540px){
           #${BLOCK_ID} .church-overlay-content{padding:82px 20px 95px!important}
@@ -113,6 +114,7 @@
           #${PHOTO_ID} .photo-1{width:52%!important;left:4%!important;top:4%!important}
           #${PHOTO_ID} .photo-2{width:52%!important;right:3%!important;top:20.48%!important}
           .sat-inv6-next-section{margin-top:-42px!important}
+          .sat-inv6-crew-title{top:33%!important;width:70%!important;max-width:290px!important;font-size:clamp(24px,6.8vw,34px)!important}
         }
         @media(max-width:390px){
           #${BLOCK_ID} .church-overlay-content{padding-left:16px!important;padding-right:16px!important}
@@ -120,6 +122,7 @@
           #${BLOCK_ID} .church-place-name{font-size:clamp(42px,11vw,52px)!important}
           #${BLOCK_ID} .church-address{font-size:clamp(16px,4.35vw,19px)!important;letter-spacing:-.01em!important}
           .sat-inv6-next-section{margin-top:-36px!important}
+          .sat-inv6-crew-title{top:32%!important;width:72%!important;font-size:clamp(22px,7vw,30px)!important}
         }
       `;
     }
@@ -132,6 +135,11 @@
       const nodes=[];
       while(walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(node=>{node.nodeValue='';});
+      next.querySelector('.sat-inv6-crew-title')?.remove();
+      const title=next.ownerDocument.createElement('h2');
+      title.className='sat-inv6-crew-title';
+      title.textContent='Toda gran aventura necesita una buena tripulación';
+      next.appendChild(title);
     }
 
     function insertPhotos(doc,block){
